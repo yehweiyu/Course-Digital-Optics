@@ -1,0 +1,13 @@
+function [U2] = ASBP_02(U0,LU0x,LU0y,z,lambda)
+a=linspace(-0.5,0.5,size(U0,2)*2);
+b=linspace(-0.5,0.5,size(U0,1)*2);
+[a,b]=meshgrid(a,b);
+fa=a*(size(a,2)-1)/LU0x/2;
+fb=b*(size(b,1)-1)/LU0y/2;
+U1=zeros(2*size(U0,1),2*size(U0,2));
+U1(floor(size(U0,1)/2)+1:floor(size(U0,1)*1.5),floor(size(U0,2)/2)+1:floor(size(U0,2)*1.5))=U0;
+FU1=circshift(fftshift(fft2(U1)),[0 0]);
+FU11=FU1.*exp(1i*(2*pi*z/lambda)*(1-(lambda*fa).^2-(lambda*fb).^2).^0.5);
+FU11(((lambda*fa).^2+(lambda*fb).^2)>1)=0;
+U20=ifft2(ifftshift(FU11));
+U2=U20(round(size(U0,1)/2)+1:round(size(U0,1)*1.5),round(size(U0,2)/2)+1:round(size(U0,2)*1.5));
